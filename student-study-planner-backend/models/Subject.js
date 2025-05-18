@@ -1,14 +1,9 @@
 const mongoose = require('mongoose');
 
-const subjectSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+const SubjectSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  topics: [
-    {
-      name: String,
-      completed: { type: Boolean, default: false }
-    }
-  ]
-}, { timestamps: true });
+  color: { type: String, default: '#FFDAB9' }, // peach-ish by default
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+});
 
-module.exports = mongoose.model('Subject', subjectSchema);
+module.exports = mongoose.model('Subject', SubjectSchema);

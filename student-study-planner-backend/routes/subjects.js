@@ -1,15 +1,11 @@
 const express = require('express');
-const {
-  getSubjects, addSubject, updateSubject, deleteSubject
-} = require('../controllers/subjectController');
-const auth = require('../middleware/authMiddleware');
-const router = express.Router();
+const { getSubjects, createSubject } = require('../controllers/subjectController');
+const { protect } = require('../middleware/authMiddleware');
 
-router.use(auth);
+const router = express.Router();
+router.use(protect);
 
 router.get('/', getSubjects);
-router.post('/', addSubject);
-router.put('/:id', updateSubject);
-router.delete('/:id', deleteSubject);
+router.post('/', createSubject);
 
 module.exports = router;

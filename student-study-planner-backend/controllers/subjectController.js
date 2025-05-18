@@ -1,27 +1,12 @@
 const Subject = require('../models/Subject');
 
 exports.getSubjects = async (req, res) => {
-  const subjects = await Subject.find({ userId: req.user.id });
+  const subjects = await Subject.find({ user: req.user._id });
   res.json(subjects);
 };
 
-exports.addSubject = async (req, res) => {
-  const { name, topics } = req.body;
-  const subject = await Subject.create({ userId: req.user.id, name, topics });
-  res.json(subject);
-};
-
-exports.updateSubject = async (req, res) => {
-  const { id } = req.params;
-  const updated = await Subject.findOneAndUpdate(
-    { _id: id, userId: req.user.id },
-    req.body,
-    { new: true }
-  );
-  res.json(updated);
-};
-
-exports.deleteSubject = async (req, res) => {
-  await Subject.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
-  res.json({ msg: 'Deleted' });
+exports.createSubject = async (req, res) => {
+  const { name, color } = req.body;
+  const subject = await Subject.create({ name, color, user: req.user._id });
+  res.status(201).json(subject);
 };

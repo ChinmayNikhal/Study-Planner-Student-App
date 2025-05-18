@@ -1,27 +1,38 @@
 const Task = require('../models/Task');
 
 exports.getTasks = async (req, res) => {
-  const tasks = await Task.find({ userId: req.user.id });
+  const tasks = await Task.find({ user: req.user._id }).populate('subject');
+  res.json(tasks);
+};
+
+exports.getUpcomingTasks = async (req, res) => {
+  const tasks = await Task.find({
+    user: req.user._id,
+    date: { $gte: new Date() }
+  }).sort({ date: 1, time: 1 }).limit(5).populate('subject');
   res.json(tasks);
 };
 
 exports.createTask = async (req, res) => {
-  const { title, description, dueDate } = req.body;
-  const task = await Task.create({ userId: req.user.id, title, description, dueDate });
-  res.json(task);
+  const task = await Task.create({ ...req.body, user: req.user._id });
+  res.status(201).json(task);
 };
 
 exports.updateTask = async (req, res) => {
-  const { id } = req.params;
-  const updated = await Task.findOneAndUpdate(
-    { _id: id, userId: req.user.id },
-    req.body,
-    { new: true }
-  );
-  res.json(updated);
+  const task = await Task.findOneAndUpdate({ _id: req.params.id, user: req.user._id }, req.body, { new: true });
+  res.json(task);
 };
 
 exports.deleteTask = async (req, res) => {
-  await Task.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
-  res.json({ msg: 'Deleted' });
+  await Task.findOneAndDelete({ _id: req.params.id, user: req.user._id });
+  res.json({ message: 'Task deleted' });
+};
+
+exports.completeTask = async (req, res) => {
+  const task = await Task.findOneAndUpdate(
+    { _id: req.params.id, user: req.user._id },
+    { completed: true },
+    { new: true }
+  );
+  res.json(task);
 };
